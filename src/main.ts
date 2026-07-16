@@ -8,12 +8,8 @@ const stopBtn = document.getElementById("control-stop")! as Button;
 
 class Player {
   state: PlayerState = "stop";
-  audioObjectUrl?: string;
-  playingSeconds: number = 0;
-  playingInterval: number | undefined = undefined;
-  currentAudioElement: HTMLAudioElement | null = null;
+  audioObjectUrl: string | undefined;
   audioTrack: AudioTrack | null = null;
-  trackDuration: number = 0;
   playerView: PlayerView;
 
   constructor(playerView: PlayerView) {
@@ -36,16 +32,26 @@ class Player {
       return;
     }
 
-    clearInterval(this.playingInterval);
+    if (this.audioObjectUrl) {
+      URL.revokeObjectURL(this.audioObjectUrl);
+    }
 
     this.audioObjectUrl = URL.createObjectURL(file);
-    const audioInstance = new Audio(this.audioObjectUrl);
-    this.currentAudioElement = audioInstance;
+    this.audioTrack = new AudioTrack(file, new Audio(this.audioObjectUrl));
 
-    audioInstance.addEventListener("loadeddata", () => {
-      this.audioTrack = new AudioTrack(file, audioInstance);
-      this.trackDuration = Number(this.audioTrack.duration);
-      this.playerView.updateTrackDuration(this.audioTrack.duration);
+    this.audioTrack.audio.addEventListener("loadedmetadata", () => {
+      this.playerView.updateTrackDuration(this.audioTrack?.getDuration() || "");
+    });
+
+    this.audioTrack.audio.addEventListener("timeupdate", () => {
+      if (this.audioTrack) {
+        const seconds = this.audioTrack.audio.currentTime;
+        const mins = Math.floor(seconds / 60);
+        const secs = Math.floor(seconds % 60);
+        this.playerView.updateTrackCurrentTime(
+          `${mins}:${secs.toString().padStart(2, "0")}`,
+        );
+      }
     });
 
     this.playerView.updateTrackInfo(file);
@@ -58,29 +64,19 @@ class Player {
   }
 
   play() {
-    if (this.currentAudioElement === null) {
+    if (this.audioTrack === null) {
       return;
     }
 
     this.state = "play";
     this.playerView.updatePlaybackText("pause");
-    this.currentAudioElement?.play();
-
-    this.playingInterval = setInterval(() => {
-      this.playingSeconds++;
-
-      const minutes = Math.floor(this.trackDuration / 60);
-      const seconds = this.playingSeconds % 60;
-      const formattedTime = `${minutes}:${seconds.toString().padStart(2, "0")}`;
-      this.playerView.updateTrackCurrentTime(formattedTime);
-    }, 1000);
+    this.audioTrack.audio.play();
   }
 
   pause() {
     this.state = "pause";
     this.playerView.updatePlaybackText("play");
-    this.currentAudioElement?.pause();
-    clearInterval(this.playingInterval);
+    this.audioTrack?.audio.pause();
   }
 
   playbackToggle() {
@@ -93,15 +89,13 @@ class Player {
   }
 
   stop() {
-    if (this.currentAudioElement) {
-      this.currentAudioElement.load();
+    if (this.audioTrack) {
+      this.audioTrack.audio.load();
     }
 
     this.state = "stop";
     this.playerView.updatePlaybackText("play");
     this.playerView.updateTrackCurrentTime("0:00");
-    this.playingSeconds = 0;
-    clearInterval(this.playingInterval);
   }
 
   resetFileInput() {
@@ -113,12 +107,14 @@ class Player {
 class AudioTrack {
   originalFile: File;
   audio: HTMLAudioElement;
-  duration: string;
 
   constructor(originalFile: File, audio: HTMLAudioElement) {
     this.originalFile = originalFile;
     this.audio = audio;
-    this.duration = (this.audio.duration / 60).toFixed(2);
+  }
+
+  getDuration() {
+    return Number((this.audio.duration / 60).toFixed(2));
   }
 }
 
@@ -141,8 +137,8 @@ class PlayerView {
     this.trackNameElement.textContent = `Name: ${file?.name}`;
   }
 
-  updateTrackDuration(duration: string) {
-    this.trackDurationElement.textContent = duration;
+  updateTrackDuration(duration: string | number) {
+    this.trackDurationElement.textContent = `${duration}`;
   }
 
   updateTrackCurrentTime(time: string) {
