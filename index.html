@@ -4,10 +4,31 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>music-player</title>
+    <link rel="stylesheet" href="src/style.css" />
+    <title>Music Player</title>
   </head>
   <body>
-    <div id="app"></div>
+    <header>
+      <h1>Music Player</h1>
+    </header>
+
+    <main>
+      <input type="file" id="input-file" accept="audio/*" />
+
+      <section id="track-info">
+        <h2 id="track-name">Name:</h2>
+        <div class="track-time-data">
+          <span id="track-currenttime">0:00</span>
+          /
+          <span id="track-duration">0:00</span>
+        </div>
+      </section>
+
+      <section id="controls" class="controls">
+        <button id="playback-toggle" disabled>Play</button>
+        <button id="control-stop">Stop</button>
+      </section>
+    </main>
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>
