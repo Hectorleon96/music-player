@@ -1,0 +1,8 @@
+export type Input = HTMLInputElement;
+export type Button = HTMLButtonElement;
+
+export const inputFile = document.getElementById("input-file")! as Input;
+export const playbackBtn = document.getElementById(
+  "playback-toggle",
+)! as Button;
+export const stopBtn = document.getElementById("control-stop")! as Button;

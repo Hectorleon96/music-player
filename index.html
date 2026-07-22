@@ -13,20 +13,35 @@
     </header>
 
     <main>
-      <input type="file" id="input-file" accept="audio/*" />
-
       <section id="track-info">
-        <h2 id="track-name">Name:</h2>
+        <h2>Select a track from your library</h2>
+        <input type="file" id="input-file" accept="audio/*" />
+      </section>
+
+      <section id="controls" class="controls">
+        <div class="control">
+          <button id="playback-toggle" disabled>Play</button>
+          <button id="control-stop">Stop</button>
+        </div>
+
         <div class="track-time-data">
+          <h2 id="track-name">---</h2>
           <span id="track-currenttime">0:00</span>
           /
           <span id="track-duration">0:00</span>
         </div>
-      </section>
 
-      <section id="controls" class="controls">
-        <button id="playback-toggle" disabled>Play</button>
-        <button id="control-stop">Stop</button>
+        <div class="player-extra-config">
+          <input
+            type="range"
+            id="volumen-input"
+            min="0"
+            max="100"
+            step="1"
+            value="50"
+          />
+          <button>Repeat</button>
+        </div>
       </section>
     </main>
     <script type="module" src="/src/main.ts"></script>
