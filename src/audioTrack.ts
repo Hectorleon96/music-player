@@ -15,6 +15,11 @@ export class AudioTrack {
 
   updateAudioFile(file: File) {
     this.originalFile = file;
+
+    if (this.audio.src) {
+      URL.revokeObjectURL(this.audio.src);
+    }
+
     this.audio.src = URL.createObjectURL(file);
   }
 }
