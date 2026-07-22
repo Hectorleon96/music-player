@@ -1,13 +1,20 @@
 export class AudioTrack {
-  originalFile: File;
   audio: HTMLAudioElement;
+  originalFile: File | undefined;
 
-  constructor(originalFile: File, audio: HTMLAudioElement) {
-    this.originalFile = originalFile;
-    this.audio = audio;
+  constructor() {
+    this.originalFile = undefined;
+    this.audio = new Audio();
   }
 
   getDuration() {
-    return Number((this.audio.duration / 60).toFixed(2));
+    if (this.audio.src) {
+      return Number((this.audio.duration / 60).toFixed(2));
+    }
+  }
+
+  updateAudioFile(file: File) {
+    this.originalFile = file;
+    this.audio.src = URL.createObjectURL(file);
   }
 }

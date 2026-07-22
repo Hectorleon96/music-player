@@ -7,41 +7,32 @@ type PlayerState = "play" | "pause" | "stop";
 export class Player {
   state: PlayerState = "stop";
   audioObjectUrl: string | undefined;
-  audioTrack: AudioTrack | null = null;
+  audioTrack: AudioTrack;
   playerView: PlayerView;
 
   constructor(playerView: PlayerView) {
     this.playerView = playerView;
+    this.audioTrack = new AudioTrack();
   }
 
   uploadFile(event: Event): void {
     const { files } = event.target as Input;
 
     if (files && files.length > 0) {
-      this.fileToAudio(files[0]);
+      this.loadTrack(files[0]);
     } else {
       this.resetFileInput();
     }
   }
 
-  fileToAudio(file: File) {
+  loadTrack(file: File) {
     if (this.isValidFile(file) === false) {
       this.resetFileInput();
       return;
     }
 
-    if (this.audioObjectUrl) {
-      URL.revokeObjectURL(this.audioObjectUrl);
-    }
-
-    if (this.audioTrack?.audio.src) {
-      this.audioTrack.audio.src = "";
-    }
-
     this.stop();
-
-    this.audioObjectUrl = URL.createObjectURL(file);
-    this.audioTrack = new AudioTrack(file, new Audio(this.audioObjectUrl));
+    this.audioTrack.updateAudioFile(file);
 
     this.audioTrack.audio.addEventListener("loadedmetadata", () => {
       this.playerView.updateTrackDuration(this.audioTrack?.getDuration() || "");
@@ -58,7 +49,7 @@ export class Player {
       }
     });
 
-    this.playerView.updateTrackInfo(this.audioTrack.originalFile);
+    this.playerView.updateTrackInfo(file);
     playbackBtn.disabled = false;
   }
 
@@ -68,10 +59,6 @@ export class Player {
   }
 
   play() {
-    if (this.audioTrack === null) {
-      return;
-    }
-
     this.state = "play";
     this.playerView.updatePlaybackText("pause");
     this.audioTrack.audio.play();
@@ -93,10 +80,7 @@ export class Player {
   }
 
   stop() {
-    if (this.audioTrack) {
-      this.audioTrack.audio.load();
-    }
-
+    this.audioTrack.audio.load();
     this.state = "stop";
     this.playerView.updatePlaybackText("play");
     this.playerView.updateTrackCurrentTime("0:00");
@@ -109,11 +93,13 @@ export class Player {
 
   updateVolume(event: Event) {
     const { value: volume } = event.target as HTMLInputElement;
-
-    if (!this.audioTrack) {
-      return;
-    }
-
+    localStorage.setItem("volume", volume);
     this.audioTrack.audio.volume = Number(volume);
+  }
+
+  savedVolume(): string {
+    const DEFAULT_VOLUME = "0.50";
+    const volume = localStorage.getItem("volume") || DEFAULT_VOLUME;
+    return volume;
   }
 }
