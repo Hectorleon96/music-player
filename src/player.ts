@@ -34,6 +34,12 @@ export class Player {
       URL.revokeObjectURL(this.audioObjectUrl);
     }
 
+    if (this.audioTrack?.audio.src) {
+      this.audioTrack.audio.src = "";
+    }
+
+    this.stop();
+
     this.audioObjectUrl = URL.createObjectURL(file);
     this.audioTrack = new AudioTrack(file, new Audio(this.audioObjectUrl));
 
@@ -52,7 +58,7 @@ export class Player {
       }
     });
 
-    this.playerView.updateTrackInfo(file);
+    this.playerView.updateTrackInfo(this.audioTrack.originalFile);
     playbackBtn.disabled = false;
   }
 
@@ -99,5 +105,15 @@ export class Player {
   resetFileInput() {
     inputFile.files = null;
     inputFile.value = "";
+  }
+
+  updateVolume(event: Event) {
+    const { value: volume } = event.target as HTMLInputElement;
+
+    if (!this.audioTrack) {
+      return;
+    }
+
+    this.audioTrack.audio.volume = Number(volume);
   }
 }
