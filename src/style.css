@@ -35,7 +35,9 @@ h1 {
   margin: 0px;
 }
 
-h2:is(#track-name) {
+h2:is(#track-name),
+h3:is(.example-track-title),
+p:is(.example-track-artist) {
   margin: 0px;
 }
 
@@ -48,7 +50,7 @@ button:disabled {
   text-transform: capitalize;
 }
 
-#track-info {
+#player-section {
   flex: 1 1 0%;
 }
 
@@ -59,6 +61,48 @@ button:disabled {
   padding-inline: 2rem;
   height: calc(var(--header-height) + 2rem);
   background-color: #333;
+}
+
+.separator {
+  background-color: #5c5c5c;
+  height: 1px;
+  margin: 3rem 0px;
+}
+
+.pixabay-link {
+  color: #ff6347;
+}
+
+#example-tracks-list {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  list-style: none;
+  padding: 0px;
+}
+
+.track-example-item {
+  padding: 0.7rem;
+  border-radius: 1rem;
+  background-color: #3d3d3d;
+  cursor: pointer;
+}
+
+.track-example-item h3 {
+  font-size: 1rem;
+}
+
+.track-example-item p {
+  font-size: 0.9rem;
+}
+
+.track-example-item:hover {
+  background-color: #4a4a4a;
+}
+
+.track-example-item:is([data-selected="true"]) {
+  background-color: #5c5c5c;
 }
 
 @media (max-width: 768px) {

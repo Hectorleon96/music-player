@@ -7,3 +7,6 @@ export const playbackBtn = document.getElementById(
 )! as Button;
 export const stopBtn = document.getElementById("control-stop")! as Button;
 export const volumeInput = document.getElementById("volumen-input")! as Input;
+export const exampleTracksList = document.getElementById(
+  "example-tracks-list",
+) as HTMLUListElement;
