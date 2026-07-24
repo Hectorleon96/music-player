@@ -22,8 +22,26 @@ export class ExampleTracks {
     return examplesAsListItem;
   }
 
-  render() {
-    const listItems = this.createListElements();
+  render(listItems: HTMLLIElement[]) {
     listItems.forEach((item) => exampleTracksList.appendChild(item));
+  }
+
+  configureInteraction() {
+    exampleTracksList.addEventListener("click", (event) => {
+      const isTrackClicked = event.composedPath().some((element) => {
+        const el = element as HTMLElement;
+        return el.classList && el.classList.contains("track-example-item");
+      });
+
+      if (isTrackClicked) {
+        // Load track...
+      }
+    });
+  }
+
+  init() {
+    const listItems = this.createListElements();
+    this.render(listItems);
+    this.configureInteraction();
   }
 }

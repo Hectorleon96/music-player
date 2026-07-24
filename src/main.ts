@@ -8,7 +8,7 @@ import { ExampleTracks } from "./exampleTracks";
 const player = new Player(new PlayerView());
 
 const exampleTracks = new ExampleTracks();
-exampleTracks.render();
+exampleTracks.init();
 
 DOM.inputFile.addEventListener("change", (event) => player.uploadFile(event));
 
