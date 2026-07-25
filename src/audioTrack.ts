@@ -1,4 +1,4 @@
-import type { AudioSource } from "./player";
+import type { PlayerState } from "./player";
 
 export class AudioTrack {
   audio: HTMLAudioElement;
@@ -15,10 +15,9 @@ export class AudioTrack {
     }
   }
 
-  updateAudioFile(file: File, from: AudioSource) {
-    console.log(from);
-
+  updateAudioFile(file: File, playerState: PlayerState) {
     this.originalFile = file;
+    this.audio.autoplay = playerState === "play";
 
     if (this.audio.src) {
       URL.revokeObjectURL(this.audio.src);

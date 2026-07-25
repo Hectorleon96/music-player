@@ -2,7 +2,7 @@ import { inputFile, playbackBtn, type Input } from "./dom";
 import type { PlayerView } from "./playerView";
 import { AudioTrack } from "./audioTrack";
 
-type PlayerState = "play" | "pause" | "stop";
+export type PlayerState = "play" | "pause" | "stop";
 export type AudioSource = "upload" | "selection" | undefined;
 
 export class Player {
@@ -38,7 +38,7 @@ export class Player {
     }
 
     this.stop();
-    this.audioTrack.updateAudioFile(file, from);
+    this.audioTrack.updateAudioFile(file, this.state);
 
     this.audioTrack.audio.addEventListener("loadedmetadata", () => {
       this.playerView.updateTrackDuration(this.audioTrack?.getDuration() || "");
