@@ -1,5 +1,5 @@
 :root {
-  --header-height: 50px;
+  --header-height: 70px;
 }
 
 * {
@@ -16,15 +16,15 @@ header {
   display: flex;
   align-items: center;
   padding-inline: 2rem;
-  height: var(--header-height);
+  height: calc(var(--header-height) - 20px);
   background-color: #333;
 }
 
 main {
   display: flex;
   flex-direction: column;
-  height: calc(100dvh - var(--header-height));
-  overflow: hidden;
+  height: calc(100dvh - (var(--header-height) - 20px));
+  overflow-y: auto;
 }
 
 section {
@@ -59,14 +59,22 @@ button:disabled {
   align-items: center;
   justify-content: space-between;
   padding-inline: 2rem;
+  gap: 1rem;
   height: calc(var(--header-height) + 2rem);
   background-color: #333;
+}
+
+.control {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
 }
 
 .separator {
   background-color: #5c5c5c;
   height: 1px;
-  margin: 3rem 0px;
+  margin: 2rem 0px;
 }
 
 .pixabay-link {
@@ -105,6 +113,11 @@ button:disabled {
   background-color: #5c5c5c;
 }
 
+.track-time-data {
+  text-align: center;
+  flex: 1 1 0%;
+}
+
 @media (max-width: 768px) {
   #volumen-input {
     display: none;
@@ -115,6 +128,11 @@ button:disabled {
   header,
   section {
     padding: 1rem;
+  }
+
+  h2,
+  h3 {
+    font-size: 1.2rem;
   }
 
   .controls {

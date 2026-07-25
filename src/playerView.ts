@@ -15,8 +15,8 @@ export class PlayerView {
     playbackBtn.textContent = text;
   }
 
-  updateTrackInfo(file: File | null) {
-    this.trackNameElement.textContent = `Name: ${file?.name}`;
+  updateTrackInfo(file: File) {
+    this.trackNameElement.textContent = file.name;
   }
 
   updateTrackDuration(duration: string | number) {
