@@ -22,6 +22,7 @@ export class Player {
 
     if (files && files.length > 0) {
       this.loadTrack(files[0], "upload");
+      this.playerView.configureUploadedTrack(files[0]);
     } else {
       this.resetFileInput();
     }

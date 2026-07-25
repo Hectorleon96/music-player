@@ -4,7 +4,7 @@ import { TRACKS_EXAMPLES } from "./tracksExamples";
 type LoadFile = (file: File) => void;
 
 export class ExampleTracks {
-  private trackStringIdentified: string = "track-example-item";
+  private trackClassName: string = "track-item";
   loadTrack;
 
   constructor(loadFile: LoadFile) {
@@ -19,9 +19,9 @@ export class ExampleTracks {
         <p class='example-track-artist'>${track.artist}</p>
       `;
 
-      listItem.id = `${this.trackStringIdentified}-${track.id}`;
+      listItem.id = `${this.trackClassName}-${track.id}`;
       listItem.dataset.selected = "false";
-      listItem.classList.add(this.trackStringIdentified);
+      listItem.classList.add(this.trackClassName);
       listItem.draggable = true;
 
       return listItem;
@@ -40,9 +40,7 @@ export class ExampleTracks {
 
       const trackClicked = composedPath.find((element) => {
         const el = element as HTMLElement;
-        return (
-          el.classList && el.classList.contains(this.trackStringIdentified)
-        );
+        return el.classList && el.classList.contains(this.trackClassName);
       });
 
       if (trackClicked === undefined) {
@@ -55,10 +53,7 @@ export class ExampleTracks {
         return;
       }
 
-      const trackClickedId = el.id.replace(
-        `${this.trackStringIdentified}-`,
-        "",
-      );
+      const trackClickedId = el.id.replace(`${this.trackClassName}-`, "");
 
       const track = TRACKS_EXAMPLES.find(
         (track) => track.id === Number(trackClickedId),
