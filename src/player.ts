@@ -8,13 +8,13 @@ export type AudioSource = "upload" | "selection" | undefined;
 export class Player {
   state: PlayerState = "stop";
   audioObjectUrl: string | undefined;
-  audioTrack: AudioTrack;
+  audioTrack: AudioTrack = new AudioTrack();
   playerView: PlayerView;
   resetSelection: Function | undefined;
 
   constructor(playerView: PlayerView) {
     this.playerView = playerView;
-    this.audioTrack = new AudioTrack();
+    this.configureEvents();
   }
 
   uploadFile(event: Event): void {
@@ -37,11 +37,15 @@ export class Player {
       this.resetSelection();
     }
 
-    this.stop();
-    this.audioTrack.updateAudioFile(file, this.state);
+    this.audioTrack.updateAudioFile(file);
+    this.playerView.updateTrackInfo(file);
+    this.play();
+    playbackBtn.disabled = false;
+  }
 
+  configureEvents() {
     this.audioTrack.audio.addEventListener("loadedmetadata", () => {
-      this.playerView.updateTrackDuration(this.audioTrack?.getDuration() || "");
+      this.playerView.updateTrackDuration(this.audioTrack.getDuration() || "");
     });
 
     this.audioTrack.audio.addEventListener("timeupdate", () => {
@@ -55,8 +59,9 @@ export class Player {
       }
     });
 
-    this.playerView.updateTrackInfo(file);
-    playbackBtn.disabled = false;
+    this.audioTrack.audio.addEventListener("ended", () => {
+      this.stop();
+    });
   }
 
   isValidFile(file: File): Boolean {
@@ -73,20 +78,20 @@ export class Player {
   pause() {
     this.state = "pause";
     this.playerView.updatePlaybackText("play");
-    this.audioTrack?.audio.pause();
+    this.audioTrack.audio.pause();
   }
 
   playbackToggle() {
     if (this.state !== "play") {
       this.play();
-      return;
+    } else {
+      this.pause();
     }
-
-    this.pause();
   }
 
   stop() {
     this.audioTrack.audio.load();
+    this.audioTrack.audio.pause();
     this.state = "stop";
     this.playerView.updatePlaybackText("play");
     this.playerView.updateTrackCurrentTime("0:00");

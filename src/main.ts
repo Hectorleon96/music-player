@@ -1,4 +1,4 @@
-// https://developer.mozilla.org/en-US/docs/Web/API/HTMLMediaElement
+// https://developer.mozilla.org/en-US/docs/Web/API/HTMLAudioElement
 
 import { Player } from "./player";
 import { PlayerView } from "./playerView";

@@ -1,5 +1,3 @@
-import type { PlayerState } from "./player";
-
 export class AudioTrack {
   audio: HTMLAudioElement;
   originalFile: File | undefined;
@@ -11,13 +9,15 @@ export class AudioTrack {
 
   getDuration() {
     if (this.audio.src) {
-      return Number((this.audio.duration / 60).toFixed(2));
+      const mins = Math.floor(this.audio.duration / 60);
+      const seconds = Math.floor(this.audio.duration % 60);
+      const duration = `${mins}:${seconds}`;
+      return duration;
     }
   }
 
-  updateAudioFile(file: File, playerState: PlayerState) {
+  updateAudioFile(file: File) {
     this.originalFile = file;
-    this.audio.autoplay = playerState === "play";
 
     if (this.audio.src) {
       URL.revokeObjectURL(this.audio.src);
