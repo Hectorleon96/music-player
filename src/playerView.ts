@@ -1,10 +1,14 @@
-import { playbackBtn } from "./dom";
+import { playbackBtn, repeatBtn } from "./dom";
+import type { AudioSource } from "./player";
+
+type LoadTrack = (file: File, from: AudioSource) => void;
 
 export class PlayerView {
   trackNameElement: HTMLElement;
   trackCurrentTime: HTMLElement;
   trackDurationElement: HTMLElement;
   inputTrack: HTMLElement;
+  loadTrack: LoadTrack | undefined;
 
   constructor() {
     this.trackNameElement = document.getElementById("track-name")!;
@@ -13,12 +17,18 @@ export class PlayerView {
     this.inputTrack = document.getElementById("input-track-container")!;
   }
 
-  configureUploadedTrack(file: File) {
-    if (this.inputTrack.classList.contains("track-item") === false) {
-      this.inputTrack.classList.add("track-item");
-    }
-
+  setupUploadedTrack(file: File) {
+    this.inputTrack.classList.add("track-item");
     this.inputTrack.querySelector("h3")!.textContent = file.name;
+    this.configureUploadedTrackClick(file);
+  }
+
+  configureUploadedTrackClick(file: File) {
+    this.inputTrack.addEventListener("click", () => {
+      if (this.loadTrack) {
+        this.loadTrack(file, "selection");
+      }
+    });
   }
 
   updatePlaybackText(text: "play" | "pause") {
@@ -35,5 +45,9 @@ export class PlayerView {
 
   updateTrackCurrentTime(time: string) {
     this.trackCurrentTime.textContent = time;
+  }
+
+  updateRepeatText(enabled: boolean) {
+    repeatBtn.textContent = enabled ? "Repeat: On" : "Repeat";
   }
 }

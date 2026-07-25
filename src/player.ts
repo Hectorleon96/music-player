@@ -1,20 +1,23 @@
-import { inputFile, playbackBtn, type Input } from "./dom";
+import { inputFile, playbackBtn, repeatBtn, type Input } from "./dom";
 import type { PlayerView } from "./playerView";
 import { AudioTrack } from "./audioTrack";
 
 export type PlayerState = "play" | "pause" | "stop";
 export type AudioSource = "upload" | "selection" | undefined;
 
+type ResetSelection = () => void;
+
 export class Player {
   state: PlayerState = "stop";
-  audioObjectUrl: string | undefined;
   audioTrack: AudioTrack = new AudioTrack();
   playerView: PlayerView;
-  resetSelection: Function | undefined;
+  resetSelection: ResetSelection | undefined;
+  repeatEnabled = false;
 
   constructor(playerView: PlayerView) {
     this.playerView = playerView;
     this.configureEvents();
+    repeatBtn.addEventListener("click", () => this.toggleRepeat());
   }
 
   uploadFile(event: Event): void {
@@ -22,7 +25,7 @@ export class Player {
 
     if (files && files.length > 0) {
       this.loadTrack(files[0], "upload");
-      this.playerView.configureUploadedTrack(files[0]);
+      this.playerView.setupUploadedTrack(files[0]);
     } else {
       this.resetFileInput();
     }
@@ -50,14 +53,12 @@ export class Player {
     });
 
     this.audioTrack.audio.addEventListener("timeupdate", () => {
-      if (this.audioTrack) {
-        const seconds = this.audioTrack.audio.currentTime;
-        const mins = Math.floor(seconds / 60);
-        const secs = Math.floor(seconds % 60);
-        this.playerView.updateTrackCurrentTime(
-          `${mins}:${secs.toString().padStart(2, "0")}`,
-        );
-      }
+      const seconds = this.audioTrack.audio.currentTime;
+      const mins = Math.floor(seconds / 60);
+      const secs = Math.floor(seconds % 60);
+      this.playerView.updateTrackCurrentTime(
+        `${mins}:${secs.toString().padStart(2, "0")}`,
+      );
     });
 
     this.audioTrack.audio.addEventListener("ended", () => {
@@ -65,7 +66,7 @@ export class Player {
     });
   }
 
-  isValidFile(file: File): Boolean {
+  isValidFile(file: File): boolean {
     const validOptions = ["mpeg", "mp3", "wav"];
     return validOptions.some((option) => file.type.endsWith(option));
   }
@@ -85,9 +86,9 @@ export class Player {
   playbackToggle() {
     if (this.state !== "play") {
       this.play();
-    } else {
-      this.pause();
+      return;
     }
+    this.pause();
   }
 
   stop() {
@@ -96,6 +97,12 @@ export class Player {
     this.state = "stop";
     this.playerView.updatePlaybackText("play");
     this.playerView.updateTrackCurrentTime("0:00");
+  }
+
+  toggleRepeat() {
+    this.repeatEnabled = !this.repeatEnabled;
+    this.audioTrack.audio.loop = this.repeatEnabled;
+    this.playerView.updateRepeatText(this.repeatEnabled);
   }
 
   resetFileInput() {
@@ -111,7 +118,6 @@ export class Player {
 
   savedVolume(): string {
     const DEFAULT_VOLUME = "0.50";
-    const volume = localStorage.getItem("volume") || DEFAULT_VOLUME;
-    return volume;
+    return localStorage.getItem("volume") || DEFAULT_VOLUME;
   }
 }
