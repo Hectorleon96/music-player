@@ -72,8 +72,9 @@ export class ExampleTracks {
   }
 
   toggleActive(clickedElementId: string) {
-    document.querySelectorAll(".track-example-item").forEach((element) => {
+    [...exampleTracksList.children].forEach((element) => {
       const el = element as HTMLLIElement;
+
       if (el.id === clickedElementId) {
         el.dataset.selected = el.dataset.selected === "true" ? "false" : "true";
       } else {
