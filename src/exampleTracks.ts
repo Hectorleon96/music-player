@@ -50,6 +50,11 @@ export class ExampleTracks {
       }
 
       const el = trackClicked as HTMLElement;
+
+      if (el.dataset.selected === "true") {
+        return;
+      }
+
       const trackClickedId = el.id.replace(
         `${this.trackStringIdentified}-`,
         "",
