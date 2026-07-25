@@ -1,7 +1,16 @@
 import { exampleTracksList } from "./dom";
 import { TRACKS_EXAMPLES } from "./tracksExamples";
 
+type LoadFile = (file: File) => void;
+
 export class ExampleTracks {
+  private trackStringIdentified: string = "track-example-item";
+  loadTrack;
+
+  constructor(loadFile: LoadFile) {
+    this.loadTrack = loadFile;
+  }
+
   createListElements(): HTMLLIElement[] {
     const examplesAsListItem = TRACKS_EXAMPLES.map((track) => {
       const listItem = document.createElement("li");
@@ -10,10 +19,9 @@ export class ExampleTracks {
         <p class='example-track-artist'>${track.artist}</p>
       `;
 
-      listItem.id = track.id.toString();
-      listItem.dataset.source = track.fileSrc;
+      listItem.id = `${this.trackStringIdentified}-${track.id}`;
       listItem.dataset.selected = "false";
-      listItem.classList.add("track-example-item");
+      listItem.classList.add(this.trackStringIdentified);
       listItem.draggable = true;
 
       return listItem;
@@ -27,14 +35,49 @@ export class ExampleTracks {
   }
 
   configureInteraction() {
-    exampleTracksList.addEventListener("click", (event) => {
-      const isTrackClicked = event.composedPath().some((element) => {
+    exampleTracksList.addEventListener("click", async (event) => {
+      const composedPath = event.composedPath();
+
+      const trackClicked = composedPath.find((element) => {
         const el = element as HTMLElement;
-        return el.classList && el.classList.contains("track-example-item");
+        return (
+          el.classList && el.classList.contains(this.trackStringIdentified)
+        );
       });
 
-      if (isTrackClicked) {
-        // Load track...
+      if (trackClicked === undefined) {
+        return;
+      }
+
+      const el = trackClicked as HTMLElement;
+      const trackClickedId = el.id.replace(
+        `${this.trackStringIdentified}-`,
+        "",
+      );
+
+      const track = TRACKS_EXAMPLES.find(
+        (track) => track.id === Number(trackClickedId),
+      );
+
+      if (track === undefined) {
+        return;
+      }
+
+      const fetchTrack = await fetch(track.fileSrc);
+      const blob = await fetchTrack.blob();
+      const file = new File([blob], track.name, { type: "audio/mpeg" });
+      this.loadTrack(file);
+      this.toggleActive(el.id);
+    });
+  }
+
+  toggleActive(clickedElementId: string) {
+    document.querySelectorAll(".track-example-item").forEach((element) => {
+      const el = element as HTMLLIElement;
+      if (el.id === clickedElementId) {
+        el.dataset.selected = el.dataset.selected === "true" ? "false" : "true";
+      } else {
+        el.dataset.selected = "false";
       }
     });
   }

@@ -7,8 +7,11 @@ import { ExampleTracks } from "./exampleTracks";
 
 const player = new Player(new PlayerView());
 
-const exampleTracks = new ExampleTracks();
+const exampleTracks = new ExampleTracks((file) =>
+  player.loadTrack(file, "selection"),
+);
 exampleTracks.init();
+player.resetSelection = () => exampleTracks.toggleActive("");
 
 DOM.inputFile.addEventListener("change", (event) => player.uploadFile(event));
 

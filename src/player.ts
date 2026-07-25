@@ -3,12 +3,14 @@ import type { PlayerView } from "./playerView";
 import { AudioTrack } from "./audioTrack";
 
 type PlayerState = "play" | "pause" | "stop";
+export type AudioSource = "upload" | "selection" | undefined;
 
 export class Player {
   state: PlayerState = "stop";
   audioObjectUrl: string | undefined;
   audioTrack: AudioTrack;
   playerView: PlayerView;
+  resetSelection: Function | undefined;
 
   constructor(playerView: PlayerView) {
     this.playerView = playerView;
@@ -19,20 +21,24 @@ export class Player {
     const { files } = event.target as Input;
 
     if (files && files.length > 0) {
-      this.loadTrack(files[0]);
+      this.loadTrack(files[0], "upload");
     } else {
       this.resetFileInput();
     }
   }
 
-  loadTrack(file: File) {
+  loadTrack(file: File, from: AudioSource) {
     if (this.isValidFile(file) === false) {
       this.resetFileInput();
       return;
     }
 
+    if (from === "upload" && this.resetSelection) {
+      this.resetSelection();
+    }
+
     this.stop();
-    this.audioTrack.updateAudioFile(file);
+    this.audioTrack.updateAudioFile(file, from);
 
     this.audioTrack.audio.addEventListener("loadedmetadata", () => {
       this.playerView.updateTrackDuration(this.audioTrack?.getDuration() || "");

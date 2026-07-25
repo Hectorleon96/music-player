@@ -1,3 +1,5 @@
+import type { AudioSource } from "./player";
+
 export class AudioTrack {
   audio: HTMLAudioElement;
   originalFile: File | undefined;
@@ -13,7 +15,9 @@ export class AudioTrack {
     }
   }
 
-  updateAudioFile(file: File) {
+  updateAudioFile(file: File, from: AudioSource) {
+    console.log(from);
+
     this.originalFile = file;
 
     if (this.audio.src) {
