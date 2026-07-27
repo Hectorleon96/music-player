@@ -16,6 +16,7 @@ export class Player {
 
   constructor(playerView: PlayerView) {
     this.playerView = playerView;
+    this.audioTrack.audio.volume = Number(this.savedVolume());
     this.configureEvents();
     repeatBtn.addEventListener("click", () => this.toggleRepeat());
   }
