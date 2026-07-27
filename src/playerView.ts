@@ -2,6 +2,7 @@ import { playbackBtn, repeatBtn } from "./dom";
 import type { AudioSource } from "./player";
 
 type LoadTrack = (file: File, from: AudioSource) => void;
+type ClearSelection = () => void;
 
 export class PlayerView {
   trackNameElement: HTMLElement;
@@ -9,6 +10,7 @@ export class PlayerView {
   trackDurationElement: HTMLElement;
   inputTrack: HTMLElement;
   loadTrack: LoadTrack | undefined;
+  clearSelection: ClearSelection | undefined;
 
   constructor() {
     this.trackNameElement = document.getElementById("track-name")!;
@@ -25,7 +27,8 @@ export class PlayerView {
 
   configureUploadedTrackClick(file: File) {
     this.inputTrack.addEventListener("click", () => {
-      if (this.loadTrack) {
+      if (this.loadTrack && this.clearSelection) {
+        this.clearSelection();
         this.loadTrack(file, "selection");
       }
     });

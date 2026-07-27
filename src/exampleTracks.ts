@@ -83,6 +83,10 @@ export class ExampleTracks {
     });
   }
 
+  clearSelection() {
+    this.toggleActive("");
+  }
+
   init() {
     const listItems = this.createListElements();
     this.render(listItems);

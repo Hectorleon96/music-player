@@ -17,6 +17,7 @@ const exampleTracks = new ExampleTracks((file) =>
 exampleTracks.init();
 
 player.resetSelection = () => exampleTracks.toggleActive("");
+playerView.clearSelection = () => exampleTracks.clearSelection();
 
 DOM.inputFile.addEventListener("change", (event) => player.uploadFile(event));
 
